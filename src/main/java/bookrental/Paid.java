@@ -3,6 +3,7 @@ package bookrental;
 public class Paid extends AbstractEvent {
 
     private Long id;
+    private Long askId;
     private Long bookId;
     private String status;
     private String payDate;
@@ -17,6 +18,13 @@ public class Paid extends AbstractEvent {
 
     public void setId(Long id) {
         this.id = id;
+    }
+    public Long getAskId() {
+        return askId;
+    }
+
+    public void setAskId(Long bookId) {
+        this.askId = askId;
     }
     public Long getBookId() {
         return bookId;

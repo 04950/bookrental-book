@@ -8,8 +8,14 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class PolicyHandler{
+
+    @Autowired
+    BookRepository bookRepository;
+
     @StreamListener(KafkaProcessor.INPUT)
     public void onStringEventListener(@Payload String eventString){
 
@@ -20,6 +26,13 @@ public class PolicyHandler{
 
         if(paid.isMe()){
             System.out.println("##### listener Rent : " + paid.toJson());
+
+            Optional<Book> optional = bookRepository.findById(paid.getBookId());
+            Book book = optional.get();
+            book.setAskId(paid.getAskId());
+            book.setStatus("RENTED");
+
+            bookRepository.save(book);
         }
     }
     @StreamListener(KafkaProcessor.INPUT)
@@ -27,7 +40,15 @@ public class PolicyHandler{
 
         if(payCanceled.isMe()){
             System.out.println("##### listener RentCancel : " + payCanceled.toJson());
+            Optional<Book> optional = bookRepository.findById(payCanceled.getBookId());
+            Book book = optional.get();
+            book.setAskId(null);
+            book.setStatus("WAITING");
+
+            bookRepository.save(book);
         }
+
+
     }
 
 }
